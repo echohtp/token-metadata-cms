@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Session</title>
+</head>
+<body>
+    <h1>Clear Authentication Session</h1>
+    <button onclick="clearSession()">Clear Session</button>
+    <script>
+        function clearSession() {
+            localStorage.removeItem('wallet_auth_session');
+            sessionStorage.clear();
+            alert('Session cleared! Please refresh the main app and re-authenticate.');
+        }
+    </script>
+</body>
+</html>
