@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { TokenMetadataOverride } from '../../lib/supabase';
 import { useWalletAuth } from '../../hooks/useWalletAuth';
+import { fetchTokenMetadata, raydiumToFormData, RaydiumTokenData } from '../../lib/raydium';
+import { isValidSolanaAddress } from '../../lib/auth';
+import { ImageUpload } from '../ui/ImageUpload';
 
 interface TokenFormProps {
   token?: TokenMetadataOverride | null;
@@ -12,7 +15,9 @@ interface TokenFormProps {
 export const TokenForm: React.FC<TokenFormProps> = ({ token, onClose }) => {
   const { getAuthHeaders } = useWalletAuth();
   const [loading, setLoading] = useState(false);
+  const [fetchingMetadata, setFetchingMetadata] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [metadataFetched, setMetadataFetched] = useState(false);
   
   const [formData, setFormData] = useState({
     mint: '',
@@ -79,6 +84,60 @@ export const TokenForm: React.FC<TokenFormProps> = ({ token, onClose }) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const fetchOnChainMetadata = async (mintAddress: string) => {
+    if (!mintAddress || !isValidSolanaAddress(mintAddress)) {
+      return;
+    }
+
+    setFetchingMetadata(true);
+    setError(null);
+
+    try {
+      const raydiumData = await fetchTokenMetadata(mintAddress);
+      
+      if (raydiumData) {
+        const autoFilledData = raydiumToFormData(raydiumData);
+        
+        // Only auto-fill empty fields to preserve user edits
+        setFormData(prev => ({
+          ...prev,
+          name: prev.name || autoFilledData.name,
+          logo: prev.logo || autoFilledData.logo,
+          description: prev.description || autoFilledData.description,
+          twitter_url: prev.twitter_url || autoFilledData.twitter_url,
+          telegram_url: prev.telegram_url || autoFilledData.telegram_url,
+          website_url: prev.website_url || autoFilledData.website_url,
+          discord_url: prev.discord_url || autoFilledData.discord_url,
+        }));
+        
+        setMetadataFetched(true);
+      } else {
+        // Token not found in Raydium, but that's okay
+        setMetadataFetched(false);
+      }
+    } catch (err) {
+      console.error('Error fetching on-chain metadata:', err);
+      // Don't show error for failed metadata fetch, it's not critical
+      setMetadataFetched(false);
+    } finally {
+      setFetchingMetadata(false);
+    }
+  };
+
+  const handleMintChange = (value: string) => {
+    handleChange('mint', value);
+    
+    // Auto-fetch metadata for new tokens when mint address is valid
+    if (!token?.mint && value && isValidSolanaAddress(value)) {
+      // Debounce the API call
+      const timeoutId = setTimeout(() => {
+        fetchOnChainMetadata(value);
+      }, 500);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -106,19 +165,55 @@ export const TokenForm: React.FC<TokenFormProps> = ({ token, onClose }) => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Mint Address *
             </label>
-            <input
-              type="text"
-              required
-              disabled={!!(token && token.mint)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 font-mono text-sm"
-              value={formData.mint}
-              onChange={(e) => handleChange('mint', e.target.value)}
-              placeholder="Enter Solana token mint address"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                required
+                disabled={!!(token && token.mint)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 font-mono text-sm"
+                value={formData.mint}
+                onChange={(e) => handleMintChange(e.target.value)}
+                placeholder="Enter Solana token mint address"
+              />
+              {fetchingMetadata && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                </div>
+              )}
+            </div>
             {token && token.mint && (
               <p className="text-xs text-gray-500 mt-1">
                 Mint address cannot be changed after creation
               </p>
+            )}
+            {!token?.mint && metadataFetched && (
+              <p className="text-xs text-green-600 mt-1">
+                ✅ On-chain metadata loaded from Raydium
+              </p>
+            )}
+            {!token?.mint && formData.mint && isValidSolanaAddress(formData.mint) && !fetchingMetadata && !metadataFetched && (
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-xs text-yellow-600">
+                  ℹ️ No metadata found on Raydium - you can fill in manually
+                </p>
+                <button
+                  type="button"
+                  onClick={() => fetchOnChainMetadata(formData.mint)}
+                  className="text-xs text-blue-600 hover:text-blue-800 underline"
+                >
+                  Retry Fetch
+                </button>
+              </div>
+            )}
+            {!token?.mint && formData.mint && isValidSolanaAddress(formData.mint) && metadataFetched && (
+              <button
+                type="button"
+                onClick={() => fetchOnChainMetadata(formData.mint)}
+                disabled={fetchingMetadata}
+                className="text-xs text-blue-600 hover:text-blue-800 underline mt-1 disabled:opacity-50"
+              >
+                🔄 Refresh from Raydium
+              </button>
             )}
           </div>
 
@@ -136,30 +231,16 @@ export const TokenForm: React.FC<TokenFormProps> = ({ token, onClose }) => {
             />
           </div>
 
-          {/* Logo URL */}
+          {/* Logo Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Logo URL
+              Logo
             </label>
-            <input
-              type="url"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <ImageUpload
               value={formData.logo}
-              onChange={(e) => handleChange('logo', e.target.value)}
-              placeholder="https://example.com/logo.png"
+              onChange={(url) => handleChange('logo', url)}
+              placeholder="Upload token logo..."
             />
-            {formData.logo && (
-              <div className="mt-2">
-                <img
-                  src={formData.logo}
-                  alt="Logo preview"
-                  className="h-12 w-12 rounded-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              </div>
-            )}
           </div>
 
           {/* Description */}

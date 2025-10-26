@@ -14,6 +14,7 @@ export const TokenMetadataCMS: React.FC = () => {
   const [showTokenForm, setShowTokenForm] = useState(false);
   const [editingToken, setEditingToken] = useState<TokenMetadataOverride | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState<'published' | 'all' | 'deleted'>('published'); // Default to show only published
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const tabs = [
@@ -120,8 +121,8 @@ export const TokenMetadataCMS: React.FC = () => {
               </div>
             </div>
 
-            {/* Search */}
-            <div className="flex items-center space-x-4">
+            {/* Search and Filters */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex-1 max-w-md">
                 <input
                   type="text"
@@ -131,17 +132,34 @@ export const TokenMetadataCMS: React.FC = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <button
-                onClick={handleRefresh}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                🔄 Refresh
-              </button>
+              
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <label className="text-sm font-medium text-gray-700">Status:</label>
+                  <select
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value as 'published' | 'all' | 'deleted')}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  >
+                    <option value="published">📝 Published Only</option>
+                    <option value="all">📋 All (Published + Unpublished)</option>
+                    <option value="deleted">🗑️ Deleted Only</option>
+                  </select>
+                </div>
+                
+                <button
+                  onClick={handleRefresh}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  🔄 Refresh
+                </button>
+              </div>
             </div>
 
             {/* Token Table */}
             <TokenTable
               searchTerm={searchTerm}
+              filter={filter}
               onEditToken={handleEditToken}
               refreshTrigger={refreshTrigger}
               canEdit={hasRole('editor')}

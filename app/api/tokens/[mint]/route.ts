@@ -112,18 +112,17 @@ export async function DELETE(
 
     const { mint } = await params;
 
-    const { data, error } = await supabaseAdmin.rpc('delete_token_metadata', {
+    const { data, error } = await supabaseAdmin.rpc('soft_delete_token_metadata', {
       p_mint: mint,
       p_wallet_address: auth.walletAddress
     });
 
     if (error) {
       console.error('Database error:', error);
+      if (error.message.includes('not found') || error.message.includes('already deleted')) {
+        return NextResponse.json({ error: error.message }, { status: 404 });
+      }
       return NextResponse.json({ error: 'Failed to delete token metadata' }, { status: 500 });
-    }
-
-    if (!data) {
-      return NextResponse.json({ error: 'Token not found or already deleted' }, { status: 404 });
     }
 
     return NextResponse.json({ message: 'Token metadata deleted successfully' });

@@ -54,6 +54,8 @@ export interface TokenMetadataOverride {
   website_url?: string;
   discord_url?: string;
   is_active: boolean;
+  deleted_at?: string;
+  deleted_by?: string;
   created_at: string;
   updated_at: string;
   created_by?: string;

@@ -6,6 +6,7 @@ import { useWalletAuth } from '../../hooks/useWalletAuth';
 
 interface TokenTableProps {
   searchTerm: string;
+  filter: 'published' | 'all' | 'deleted';
   onEditToken: (token: TokenMetadataOverride) => void;
   refreshTrigger: number;
   canEdit: boolean;
@@ -13,6 +14,7 @@ interface TokenTableProps {
 
 export const TokenTable: React.FC<TokenTableProps> = ({
   searchTerm,
+  filter,
   onEditToken,
   refreshTrigger,
   canEdit
@@ -30,7 +32,22 @@ export const TokenTable: React.FC<TokenTableProps> = ({
       const params = new URLSearchParams();
       if (searchTerm) params.set('search', searchTerm);
       params.set('limit', '50');
-      params.set('active_only', 'false'); // Show both active and inactive tokens in CMS
+      
+      // Set filter parameters based on the selected filter
+      switch (filter) {
+        case 'published':
+          params.set('active_only', 'true');
+          params.set('include_deleted', 'false');
+          break;
+        case 'all':
+          params.set('active_only', 'false');
+          params.set('include_deleted', 'false');
+          break;
+        case 'deleted':
+          params.set('active_only', 'false');
+          params.set('include_deleted', 'true');
+          break;
+      }
       
       const authHeaders = getAuthHeaders();
       
@@ -77,7 +94,7 @@ export const TokenTable: React.FC<TokenTableProps> = ({
     if (!authLoading && isAuthenticated) {
       fetchTokens();
     }
-  }, [searchTerm, refreshTrigger, authLoading, isAuthenticated]);
+  }, [searchTerm, filter, refreshTrigger, authLoading, isAuthenticated]);
 
   const handleDelete = async (mint: string) => {
     if (!confirm('Are you sure you want to delete this token metadata?')) return;
@@ -101,6 +118,31 @@ export const TokenTable: React.FC<TokenTableProps> = ({
     } catch (err) {
       console.error('Error deleting token:', err);
       alert(err instanceof Error ? err.message : 'Failed to delete token');
+    }
+  };
+
+  const handleRestore = async (mint: string) => {
+    if (!confirm('Are you sure you want to restore this token metadata?')) return;
+    
+    try {
+      const response = await fetch(`/api/tokens/${mint}/restore`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        }
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to restore token');
+      }
+
+      // Refresh the list
+      fetchTokens();
+    } catch (err) {
+      console.error('Error restoring token:', err);
+      alert(err instanceof Error ? err.message : 'Failed to restore token');
     }
   };
 
@@ -269,12 +311,14 @@ export const TokenTable: React.FC<TokenTableProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
                     className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      token.is_active
+                      token.deleted_at
+                        ? 'bg-gray-100 text-gray-800'
+                        : token.is_active
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                        : 'bg-yellow-100 text-yellow-800'
                     }`}
                   >
-                    {token.is_active ? 'Active' : 'Inactive'}
+                    {token.deleted_at ? '🗑️ Deleted' : token.is_active ? '📝 Published' : '📋 Unpublished'}
                   </span>
                 </td>
                 
@@ -292,18 +336,29 @@ export const TokenTable: React.FC<TokenTableProps> = ({
                 {canEdit && (
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
-                      <button
-                        onClick={() => onEditToken(token)}
-                        className="text-blue-600 hover:text-blue-900 px-3 py-1 rounded hover:bg-blue-50"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(token.mint)}
-                        className="text-red-600 hover:text-red-900 px-3 py-1 rounded hover:bg-red-50"
-                      >
-                        Delete
-                      </button>
+                      {token.deleted_at ? (
+                        <button
+                          onClick={() => handleRestore(token.mint)}
+                          className="text-green-600 hover:text-green-900 px-3 py-1 rounded hover:bg-green-50"
+                        >
+                          Restore
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => onEditToken(token)}
+                            className="text-blue-600 hover:text-blue-900 px-3 py-1 rounded hover:bg-blue-50"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(token.mint)}
+                            className="text-red-600 hover:text-red-900 px-3 py-1 rounded hover:bg-red-50"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 )}

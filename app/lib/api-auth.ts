@@ -37,7 +37,7 @@ export async function authenticateRequest(request: NextRequest): Promise<Authent
   }
   const timestamp = parseInt(authTimestamp);
 
-  // Verify timestamp is recent (within 5 minutes)
+  // Verify timestamp is recent (within 30 minutes)
   if (!isValidTimestamp(timestamp)) {
     throw new Error('Authentication timestamp expired');
   }

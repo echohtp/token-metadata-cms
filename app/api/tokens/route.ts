@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const activeOnly = searchParams.get('active_only') !== 'false';
+    const includeDeleted = searchParams.get('include_deleted') === 'true';
     const search = searchParams.get('search') || '';
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100);
     const offset = parseInt(searchParams.get('offset') || '0');
@@ -16,6 +17,7 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await supabaseAdmin.rpc('get_token_metadata_overrides', {
       p_active_only: activeOnly,
+      p_include_deleted: includeDeleted,
       p_search: search,
       p_limit: limit,
       p_offset: offset

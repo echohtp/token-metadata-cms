@@ -36,11 +36,11 @@ export async function verifyWalletSignature(
   }
 }
 
-// Check if timestamp is valid (within 5 minutes)
+// Check if timestamp is valid (within 30 minutes)
 export function isValidTimestamp(timestamp: number): boolean {
   const now = Date.now();
-  const fiveMinutes = 5 * 60 * 1000;
-  return Math.abs(now - timestamp) < fiveMinutes;
+  const thirtyMinutes = 30 * 60 * 1000;
+  return Math.abs(now - timestamp) < thirtyMinutes;
 }
 
 // Check wallet authorization from database
