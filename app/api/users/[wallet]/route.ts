@@ -4,14 +4,14 @@ import { authenticateRequest, requireRole } from '../../../lib/api-auth';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { wallet: string } }
+  { params }: { params: Promise<{ wallet: string }> }
 ) {
   try {
     // Require admin role for updating users
     const auth = await authenticateRequest(request);
     requireRole(auth.role, 'admin');
 
-    const walletAddress = params.wallet;
+    const { wallet: walletAddress } = await params;
     const body = await request.json();
     const { name, role, is_active, notes } = body;
 
@@ -54,14 +54,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { wallet: string } }
+  { params }: { params: Promise<{ wallet: string }> }
 ) {
   try {
     // Require admin role for deactivating users
     const auth = await authenticateRequest(request);
     requireRole(auth.role, 'admin');
 
-    const walletAddress = params.wallet;
+    const { wallet: walletAddress } = await params;
 
     // Don't allow admins to deactivate themselves
     if (walletAddress === auth.walletAddress) {
