@@ -5,6 +5,173 @@
   --foreground: #171717;
 }
 
+html.dark,
+.dark {
+  --background: #0f1419;
+  --foreground: #e4e6ea;
+}
+
+/* Amazing dark mode theme */
+html.dark,
+html.dark body,
+.dark,
+.dark body {
+  background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%) !important;
+  color: #e4e6ea !important;
+  color-scheme: dark;
+}
+
+/* Enhanced dark component styles */
+html.dark .bg-white,
+.dark .bg-white {
+  background: linear-gradient(145deg, #1e2530, #252b3a) !important;
+  border: 1px solid rgba(99, 102, 241, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+html.dark .bg-gray-50,
+.dark .bg-gray-50 {
+  background: linear-gradient(145deg, #0f1419, #1a1f2e) !important;
+}
+
+html.dark .bg-gray-100,
+.dark .bg-gray-100 {
+  background: linear-gradient(145deg, #2a3441, #343b4a) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+}
+
+html.dark .bg-gray-800,
+.dark .bg-gray-800 {
+  background: linear-gradient(145deg, #1e2530, #252b3a) !important;
+  border: 1px solid rgba(99, 102, 241, 0.1) !important;
+}
+
+html.dark .text-gray-900,
+.dark .text-gray-900 {
+  color: #ffffff !important;
+}
+
+html.dark .text-gray-600,
+.dark .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+html.dark .text-gray-700,
+.dark .text-gray-700 {
+  color: #d1d5db !important;
+}
+
+/* Enhanced borders and shadows */
+html.dark .border-gray-200,
+.dark .border-gray-200 {
+  border-color: rgba(99, 102, 241, 0.2) !important;
+}
+
+html.dark .border-gray-300,
+.dark .border-gray-300 {
+  border-color: rgba(99, 102, 241, 0.25) !important;
+}
+
+html.dark .shadow,
+.dark .shadow {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.dark .shadow-sm,
+.dark .shadow-sm {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Glowing accents */
+html.dark .bg-blue-600,
+.dark .bg-blue-600 {
+  background: linear-gradient(145deg, #6366f1, #8b5cf6) !important;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4) !important;
+}
+
+html.dark .bg-blue-600:hover,
+.dark .bg-blue-600:hover {
+  background: linear-gradient(145deg, #7c3aed, #a855f7) !important;
+  box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6) !important;
+}
+
+/* Table enhancements */
+html.dark .divide-gray-200 > *,
+.dark .divide-gray-200 > * {
+  border-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+html.dark tr:hover,
+.dark tr:hover {
+  background: linear-gradient(145deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05)) !important;
+  transform: translateY(-1px);
+  transition: all 0.2s ease !important;
+}
+
+/* Form inputs */
+html.dark input,
+html.dark select,
+html.dark textarea,
+.dark input,
+.dark select,
+.dark textarea {
+  background: linear-gradient(145deg, #1e2530, #252b3a) !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
+  color: #e4e6ea !important;
+}
+
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus,
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Status badges */
+html.dark .bg-green-100,
+.dark .bg-green-100 {
+  background: linear-gradient(145deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.3)) !important;
+  border: 1px solid rgba(34, 197, 94, 0.4) !important;
+}
+
+html.dark .bg-yellow-100,
+.dark .bg-yellow-100 {
+  background: linear-gradient(145deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.3)) !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+}
+
+html.dark .bg-red-100,
+.dark .bg-red-100 {
+  background: linear-gradient(145deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.3)) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+}
+
+html.dark .bg-blue-50,
+.dark .bg-blue-50 {
+  background: linear-gradient(145deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.15)) !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Navigation specific dark mode fixes */
+html.dark nav,
+.dark nav {
+  background: linear-gradient(145deg, rgba(30, 37, 48, 0.9), rgba(37, 43, 58, 0.9)) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+html.dark .bg-white\/90,
+.dark .bg-white\/90 {
+  background: linear-gradient(145deg, rgba(30, 37, 48, 0.9), rgba(37, 43, 58, 0.9)) !important;
+}
+
+html.dark .bg-white\/95,
+.dark .bg-white\/95 {
+  background: linear-gradient(145deg, rgba(30, 37, 48, 0.95), rgba(37, 43, 58, 0.95)) !important;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -12,11 +179,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 body {

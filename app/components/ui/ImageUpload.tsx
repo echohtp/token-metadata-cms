@@ -99,7 +99,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       {/* Upload Area */}
       <div
         className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer
-          ${dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
+          ${dragOver ? 'border-blue-400 bg-blue-50 dark:bg-blue-900' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'}
           ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
         `}
         onDrop={handleDrop}
@@ -118,16 +118,16 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         
         {uploading ? (
           <div className="flex flex-col items-center space-y-2">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="text-sm text-gray-600">Uploading to IPFS...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
+            <p className="text-sm text-gray-600 dark:text-gray-300">Uploading to IPFS...</p>
           </div>
         ) : (
           <div className="flex flex-col items-center space-y-2">
-            <div className="text-4xl text-gray-400">📁</div>
-            <p className="text-sm text-gray-600">
+            <div className="text-4xl text-gray-400 dark:text-gray-500">📁</div>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               Drag & drop an image here, or click to select
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               PNG, JPG, GIF up to 10MB
             </p>
           </div>
@@ -136,15 +136,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
       {/* Error Message */}
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800 text-sm">{error}</p>
+        <div className="p-3 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg">
+          <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
         </div>
       )}
 
       {/* Current Image Preview */}
       {value && (
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Current Logo:
           </label>
           <div className="flex items-center space-x-3">
@@ -157,13 +157,13 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               }}
             />
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-600 truncate font-mono">
+              <p className="text-sm text-gray-600 dark:text-gray-300 truncate font-mono">
                 {value}
               </p>
               <button
                 type="button"
                 onClick={() => onChange('')}
-                className="text-xs text-red-600 hover:text-red-800"
+                className="text-xs text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 transition-colors"
               >
                 Remove
               </button>
@@ -174,12 +174,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
       {/* Manual URL Input */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Or enter URL manually:
         </label>
         <input
           type="url"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-sm transition-colors"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="https://example.com/logo.png"
